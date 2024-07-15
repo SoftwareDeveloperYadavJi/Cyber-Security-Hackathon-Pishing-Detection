@@ -1,8 +1,14 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 import joblib
 import os
+from flask_cors import CORS
+import logging
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
 
 # Load the model and vectorizer
 model_path = 'phishing_model.pkl'
@@ -23,30 +29,20 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     url = request.form.get('url')
-
-    # Log the input URL
-    print(f"Input URL: {url}")
-
-    # Process the URL to extract features using the fitted vectorizer
     features = vectorizer.transform([url])
-
-    # Log the feature vector
-    print(f"Feature Vector: {features.toarray()}")
-
-    # Predict using the loaded model
     prediction = loaded_model.predict(features)
-    
-    # Log the prediction
-    print(f"Prediction: {prediction}")
-
-    # Correctly determine the result based on the prediction
     result = "Phishing" if prediction[0].lower() == 'phishing' else "Legitimate"
-
-    # Log the result
-    print(f"Result to be rendered: {result}")
-
-    # Pass the result to the template
     return render_template('result.html', prediction=result)
+
+@app.route('/check-url', methods=['POST'])
+def check_url():
+    data = request.get_json()
+    url = data['url']
+    features = vectorizer.transform([url])
+    prediction = loaded_model.predict(features)
+    result = "Phishing" if prediction[0].lower() == 'phishing' else "Legitimate"
+    logging.debug(f"URL checked: {url}, Result: {result}")
+    return jsonify({'isPhishing': result == "Phishing"})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
