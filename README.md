@@ -86,6 +86,8 @@ phishing-url-detector/
 MIT License
 
 ## Contact
-
-Email: your.email@example.com
 ```
+Email: nitiny1524@gmail.com
+
+```
+
