@@ -81,13 +81,6 @@ phishing-url-detector/
 3. Commit changes
 4. Push and create pull request
 
-## License
 
-MIT License
 
-## Contact
-```
-Email: nitiny1524@gmail.com
-
-```
 
